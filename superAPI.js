@@ -99,4 +99,77 @@ $(document).ready(function() {
         });
     })
 
+    $('#traer-spotify').click(function(){
+        var idArtista = $('#id-artista').val()
+        var token = $('#token').val()
+        //var token = 'BQAZhsOrKlxA-K7RxMpGvTjbi9_s9l4usVKvLPNC0lAxozczl78XjhAUi16w4Aik8g7flXx9stLGY6ZKltoqSMmUxmkdlWMdv3wbYRKJYUa0cgwhxsZSqnHTYuoUBMiuKTQ-TO2luAoHlAw'
+        $.get({
+            url: 'https://api.spotify.com/v1/artists/' + idArtista +'/albums',
+            headers: {
+                Authorization: 'Bearer ' + token
+            },
+            success: function(respuestaOK){
+                var contenedor = $('#cards-container')
+                contenedor.empty()
+
+                $.each(respuestaOK.items, function(indice, album){
+                    contenedor.append("<div class='card'>" +
+                                "<img src='" + album.images[1].url + "' class='card-img-top' alt='" + album.name + "'>" +
+                                "<div class='card-body'>"+
+                                "<h5 class='card-title'>" + album.name + "</h5>" +
+                                "<p class='card-text'><b>Lanzamiento: </b>" + album.release_date + "</p>"+
+                            "</div></div>")
+                })
+
+            },
+            error: function(respuestaError){
+                console.error(respuestaError);
+            }
+        })
+    })
+
+    $('#traer-marvel').click(function(){
+        var PRIV_KEY = "37fafc89e443344d000759ac31aefc70180f4f02";
+        var PUBLIC_KEY = "dbb3041a457cd17a26f5c1caf639467b";
+        var timeStamp = new Date().getTime();
+        var hash = CryptoJS.MD5(timeStamp + PRIV_KEY + PUBLIC_KEY).toString();
+
+        var characterId = '1009718'; // wolverine
+
+        var datosAEnviar = {
+            ts: timeStamp,
+            apikey: PUBLIC_KEY,
+            hash: hash,
+            characters: characterId
+        }
+
+        var urlBase = 'http://gateway.marvel.com:80/v1/public/comics'
+
+        $.get({
+            url: urlBase,
+            data: datosAEnviar,
+            success: function(respuestaOK){
+                var contenedor = $('#cards-container')
+                contenedor.empty()
+
+                $.each(respuestaOK.data.results, function(indice, comic){
+
+                    var imagen = comic.thumbnail.path + "/portrait_medium." + comic.thumbnail.extension
+
+                    contenedor.append("<div class='card'>" +
+                                "<img src='" + imagen + "' class='card-img-top' alt='" + comic.title + "'>" +
+                                "<div class='card-body'>"+
+                                "<h5 class='card-title'>" + comic.title + "</h5>" +
+                                "<p class='card-text'><b>Lanzamiento: </b>" + comic.description + "</p>"+
+                            "</div></div>")
+                            console.log(comic)
+
+                })
+            },
+            error: function(respuestaError){
+                console.error(respuestaError);
+            }
+        })
+    })
+
 })
